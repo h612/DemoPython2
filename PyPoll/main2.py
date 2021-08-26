@@ -1,41 +1,39 @@
 import os
 import csv
-from collections import Counter
 pybank = os.path.join("Resources", "election_data.csv")
 
-with open(pybank) as csv_file:
+
+dict1={}#DICTIONARY OF KEY VALUES {NAME: VOTES}
+tv=0# TOTAL VOTES
+
+with open(pybank,"r") as csv_file:
     csvreader  = csv.reader(csv_file, delimiter=",")
     # Skip header
     pybank_header = next(csvreader )
-    total=0
-    total_pl=0
-    changes=[]
-    list_of_candidates=[]
-    unique_list_of_candidates=[]
-    for i,r in enumerate(csvreader):
-        
-        total+=1
-        new_row = [' '.join([r[1], r[2]])]
-        list_of_candidates.append(new_row[0])
-        
-        c=Counter(list_of_candidates)
-        
-    print(unique_list_of_candidates)     
-    print(c)
-    print("The total number of votes cast: ",total)
-    print("A complete list of candidates who received votes: ",unique_list_of_candidates)
     
-    print("Greatest Increase:")
-    print("Greatest Decrease: ")
+    for r in csvreader:
+        try:
+            dict1[r[2]]#try to access the value from key
+        except KeyError:
+            dict1[r[2]]=1#new person
+            tv+=1
+        else:
+            dict1[r[2]]=dict1[r[2]]+1#INCREMENT VOTES
+            tv+=1
 
-##    budget_file = os.path.join("analysis", "report.txt")
-##    with open(budget_file, "w") as outfile:
-##
-##        outfile.write("Financial Analysis\n")
-##        outfile.write("----------------------------\n")
-##        outfile.write(f"Total Months:  {total}\n")
-##        outfile.write(f"Total:  ${total_pl}\n")
-##        outfile.write(f"Average Change:  ${averageChanges}\n")
-##        outfile.write(f"Greatest Increase in Profits:  {max(changes)} \n")
-##        outfile.write(f"Greatest Decrease in Losses:  {min(changes)} ")
-##
+election_file = os.path.join("analysis", "reportPoll.txt")
+
+with open(election_file, "w") as outfile:
+    outfile.write("""Election Results\n-------------------------\nTotal Votes: {}\n-------------------------""".format(tv))
+    i=0
+
+    for wn, v in reversed(sorted(dict1.items(), key=lambda x: x[1])):
+        outfile.write("""\n{}: {}% ({})""".format(wn,round(v/tv*100,2),v))
+        
+        if i==1:
+            winner=wn
+            
+    outfile.write("""\n-------------------------\nWinner: {}\n-------------------------""".format(winner))
+
+
+
